@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AuthButton from "@/components/AuthButton";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,19 +36,22 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(item.path) ? "text-primary" : "text-warm-gray"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+          <div className="hidden lg:flex items-center space-x-8">
+            <nav className="flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive(item.path) ? "text-primary" : "text-foreground"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+            <AuthButton />
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
@@ -69,13 +73,16 @@ const Header = () => {
                   key={item.name}
                   to={item.path}
                   className={`text-sm font-medium transition-colors px-4 py-2 rounded-lg hover:bg-muted ${
-                    isActive(item.path) ? "text-primary bg-muted" : "text-warm-gray"
+                    isActive(item.path) ? "text-primary bg-muted" : "text-foreground"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
+              <div className="px-4 py-2">
+                <AuthButton />
+              </div>
             </div>
           </nav>
         )}

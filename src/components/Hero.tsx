@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Hero = () => {
@@ -33,19 +34,23 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button 
-            size="lg" 
-            className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-6 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
-          >
-            Shop Now
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground px-8 py-6 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
-          >
-            Join the Movement
-          </Button>
+          <Link to="/shop">
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-6 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
+            >
+              Shop Now
+            </Button>
+          </Link>
+          <Link to="/movement">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground px-8 py-6 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
+            >
+              Join the Movement
+            </Button>
+          </Link>
         </div>
         
         <div className="mt-16 animate-healing-pulse">

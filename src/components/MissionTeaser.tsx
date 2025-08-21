@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Heart, Users, Sparkles } from "lucide-react";
 
 const MissionTeaser = () => {
@@ -65,12 +66,14 @@ const MissionTeaser = () => {
               </div>
             </div>
 
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
-            >
-              Learn More About Us
-            </Button>
+            <Link to="/about">
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
+              >
+                Learn More About Us
+              </Button>
+            </Link>
           </div>
 
           {/* Visual Element */}
@@ -101,12 +104,14 @@ const MissionTeaser = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-3 rounded-lg"
-                  >
-                    Get Involved Today
-                  </Button>
+                  <Link to="/movement">
+                    <Button 
+                      variant="secondary" 
+                      className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-3 rounded-lg"
+                    >
+                      Get Involved Today
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
