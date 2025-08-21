@@ -19,7 +19,7 @@ const Hero = () => {
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-gentle-fade">
         <h1 className="font-heading text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
           Welcome to{" "}
-          <span className="bg-gradient-healing bg-clip-text text-transparent">
+          <span className="bg-gradient-healing bg-clip-text text-blue-950 rounded-2xl p-2">
             PinkBlue
           </span>
         </h1>

@@ -21,9 +21,9 @@
     --healing-blue-dark: 207 44% 65%;    /* Deeper blue */
     
     /* Gentle grays */
-    --calm-gray: 220 9% 96%;             /* Light cool grey */
-    --calm-gray-medium: 220 9% 89%;      /* Medium grey */
-    --warm-gray: 210 11% 71%;            /* Muted gray for text */
+    --calm-gray: 215 9% 96%;             /* Light cool grey */
+    --calm-gray-medium: 215 9% 89%;      /* Medium grey */
+    --warm-gray: 179 100% 0%;            /* Muted gray for text */
 
     /* Semantic color mapping */
     --primary: var(--healing-pink);

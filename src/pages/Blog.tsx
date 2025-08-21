@@ -39,7 +39,7 @@ const Blog = () => {
           <div className="container mx-auto max-w-4xl text-center">
             <h1 className="font-heading text-4xl md:text-6xl font-bold text-foreground mb-6 animate-gentle-fade">
               Healing{" "}
-              <span className="bg-gradient-healing bg-clip-text text-transparent">
+              <span className="bg-gradient-healing bg-clip-text text-blue-950 rounded-2xl p-2">
                 Corner
               </span>
             </h1>
