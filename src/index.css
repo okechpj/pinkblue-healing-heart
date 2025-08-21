@@ -2,41 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* PinkBlue Healing Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
+    /* Base colors - clean and airy */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 13% 18%;
+    
+    /* Healing pink tones */
+    --healing-pink: 350 100% 88%;        /* Soft baby pink */
+    --healing-pink-light: 350 100% 94%;  /* Lighter pink */
+    --healing-pink-dark: 350 65% 78%;    /* Deeper pink */
+    
+    /* Calming blue tones */
+    --healing-blue: 207 44% 80%;         /* Pastel blue */
+    --healing-blue-light: 207 44% 90%;   /* Lighter blue */
+    --healing-blue-dark: 207 44% 65%;    /* Deeper blue */
+    
+    /* Gentle grays */
+    --calm-gray: 220 9% 96%;             /* Light cool grey */
+    --calm-gray-medium: 220 9% 89%;      /* Medium grey */
+    --warm-gray: 210 11% 71%;            /* Muted gray for text */
 
+    /* Semantic color mapping */
+    --primary: var(--healing-pink);
+    --primary-foreground: 220 13% 18%;
+    --primary-hover: var(--healing-pink-dark);
+    
+    --secondary: var(--healing-blue);
+    --secondary-foreground: 220 13% 18%;
+    --secondary-hover: var(--healing-blue-dark);
+    
+    --muted: var(--calm-gray);
+    --muted-foreground: var(--warm-gray);
+    
+    --accent: var(--healing-blue-light);
+    --accent-foreground: 220 13% 18%;
+    
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 220 13% 18%;
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
+    --popover-foreground: 220 13% 18%;
+    
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 220 13% 91%;
+    --input: 220 13% 95%;
+    --ring: var(--healing-pink);
+    
+    /* Healing gradients */
+    --gradient-healing: linear-gradient(135deg, hsl(var(--healing-pink)) 0%, hsl(var(--healing-blue)) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--calm-gray)) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--healing-pink-light)) 0%, hsl(var(--healing-blue-light)) 50%, hsl(var(--calm-gray)) 100%);
+    
+    /* Healing shadows */
+    --shadow-gentle: 0 4px 20px -2px hsl(var(--healing-pink) / 0.15);
+    --shadow-card: 0 8px 30px -4px hsl(var(--healing-blue) / 0.2);
+    --shadow-hero: 0 20px 60px -10px hsl(var(--healing-pink) / 0.3);
+    
+    /* Rounded corners for healing feel */
+    --radius: 0.75rem;
+    --radius-large: 1.5rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +129,104 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  /* Typography utilities */
+  .font-heading {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-body {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-healing {
+    background: var(--gradient-healing);
+  }
+  
+  .bg-gradient-soft {
+    background: var(--gradient-soft);
+  }
+  
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  /* Custom shadows */
+  .shadow-gentle {
+    box-shadow: var(--shadow-gentle);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-hero {
+    box-shadow: var(--shadow-hero);
+  }
+
+  /* Healing animations */
+  .animate-gentle-fade {
+    animation: gentle-fade 0.6s ease-out;
+  }
+  
+  .animate-soft-slide {
+    animation: soft-slide 0.8s ease-out;
+  }
+  
+  .animate-healing-pulse {
+    animation: healing-pulse 2s ease-in-out infinite;
+  }
+
+  /* Interactive states */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+@layer components {
+  /* Keyframes */
+  @keyframes gentle-fade {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes soft-slide {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes healing-pulse {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 }

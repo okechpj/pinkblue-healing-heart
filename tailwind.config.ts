@@ -24,13 +24,16 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					foreground: 'hsl(var(--secondary-foreground))',
+					hover: 'hsl(var(--secondary-hover))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -52,6 +55,24 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				
+				// Healing color palette
+				'healing-pink': {
+					DEFAULT: 'hsl(var(--healing-pink))',
+					light: 'hsl(var(--healing-pink-light))',
+					dark: 'hsl(var(--healing-pink-dark))'
+				},
+				'healing-blue': {
+					DEFAULT: 'hsl(var(--healing-blue))',
+					light: 'hsl(var(--healing-blue-light))',
+					dark: 'hsl(var(--healing-blue-dark))'
+				},
+				'calm-gray': {
+					DEFAULT: 'hsl(var(--calm-gray))',
+					medium: 'hsl(var(--calm-gray-medium))'
+				},
+				'warm-gray': 'hsl(var(--warm-gray))',
+				
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -62,6 +83,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			fontFamily: {
+				'heading': ['Playfair Display', 'serif'],
+				'body': ['Poppins', 'sans-serif'],
+				'sans': ['Poppins', 'sans-serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
