@@ -16,7 +16,7 @@ const MissionTeaser = () => {
               </span>
             </h2>
             
-            <p className="text-lg text-warm-gray mb-8 leading-relaxed">
+            <p className="text-lg text-foreground mb-8 leading-relaxed">
               Born from the Pink Ribbon Drive, PinkBlue has evolved into a movement of hope, 
               healing, and community. We believe in the power of love to heal hearts, 
               comfort souls, and strengthen spirits during life's most challenging moments.
@@ -31,7 +31,7 @@ const MissionTeaser = () => {
                   <h3 className="font-heading text-xl font-semibold text-foreground mb-2">
                     Compassionate Care
                   </h3>
-                  <p className="text-warm-gray">
+                  <p className="text-foreground">
                     Supporting cancer patients and survivors with love, understanding, and practical resources.
                   </p>
                 </div>
@@ -45,7 +45,7 @@ const MissionTeaser = () => {
                   <h3 className="font-heading text-xl font-semibold text-foreground mb-2">
                     Community Healing
                   </h3>
-                  <p className="text-warm-gray">
+                  <p className="text-foreground">
                     Building connections through our Healing Hour events and supportive community networks.
                   </p>
                 </div>
@@ -59,7 +59,7 @@ const MissionTeaser = () => {
                   <h3 className="font-heading text-xl font-semibold text-foreground mb-2">
                     Natural Wellness
                   </h3>
-                  <p className="text-warm-gray">
+                  <p className="text-foreground">
                     Promoting holistic healing through natural products, mindful practices, and gentle care.
                   </p>
                 </div>

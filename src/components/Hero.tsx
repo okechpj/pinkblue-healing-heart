@@ -28,7 +28,7 @@ const Hero = () => {
           Where Healing Meets Heart
         </p>
         
-        <p className="text-lg md:text-xl text-warm-gray mb-12 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg md:text-xl text-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
           Join our compassionate community dedicated to wellness, healing, and supporting those on their cancer journey. 
           Discover natural products that nurture both body and soul.
         </p>
