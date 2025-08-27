@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Heart, Mail, Phone, MapPin } from "lucide-react";
+import logo from "@/assets/logo.jpg"
 
 const Footer = () => {
   const quickLinks = [
@@ -23,9 +24,13 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-healing rounded-full flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-lg">PB</span>
-              </div>
+              <div className="w-15 h-10  ">
+               <img 
+                src={logo} 
+                alt="BluePink Logo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
               <div>
                 <h3 className="font-heading text-xl font-bold text-foreground">BluePink</h3>
                 <p className="text-xs text-warm-gray -mt-1">Healing with Love</p>
@@ -86,11 +91,11 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-warm-gray">
                 <Mail className="w-4 h-4 text-primary flex-shrink-0" />
-                <span className="text-sm">hello@pinkblue.com</span>
+                <span className="text-sm">glennanynecqe@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3 text-warm-gray">
                 <Phone className="w-4 h-4 text-primary flex-shrink-0" />
-                <span className="text-sm">+1 (555) 123-HEAL</span>
+                <span className="text-sm">+254 768 699 946</span>
               </div>
               <div className="flex items-center space-x-3 text-warm-gray">
                 <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
@@ -105,7 +110,7 @@ const Footer = () => {
                 className="inline-flex items-center space-x-2 bg-healing-blue hover:bg-healing-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <Phone className="w-4 h-4" />
-                <span className="text-sm font-medium">Chat with Us</span>
+                <span className="text-primary-blue font-medium">Chat with Us</span>
               </a>
             </div>
           </div>

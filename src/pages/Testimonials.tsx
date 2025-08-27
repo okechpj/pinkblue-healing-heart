@@ -125,20 +125,7 @@ const Testimonials = () => {
               ))}
             </div>
 
-            <div className="text-center">
-              <div className="bg-gradient-healing rounded-3xl p-12 text-white max-w-3xl mx-auto">
-                <h3 className="font-heading text-3xl font-bold mb-6">
-                  Share Your Healing Story
-                </h3>
-                <p className="text-lg opacity-90 mb-8">
-                  Your journey could inspire and comfort others walking a similar path. 
-                  We'd love to hear how PinkBlue has been part of your healing experience.
-                </p>
-                <button className="bg-white text-primary font-bold px-8 py-4 rounded-xl hover:bg-white/90 transition-colors text-lg">
-                  Submit Your Story
-                </button>
-              </div>
-            </div>
+           
           </div>
         </section>
       </main>

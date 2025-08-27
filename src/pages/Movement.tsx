@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, Calendar, Gift } from "lucide-react";
 
+// import { useNavigate } from "react-router-dom";
+
+
+// const navigate = useNavigate();
+
 const Movement = () => {
   return (
     <div className="min-h-screen">
@@ -36,7 +41,7 @@ const Movement = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 auto-rows-fr">
               <Card className="text-center shadow-card border-0 bg-healing-pink-light">
                 <CardHeader>
                   <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -63,18 +68,6 @@ const Movement = () => {
 
               <Card className="text-center shadow-card border-0 bg-calm-gray">
                 <CardHeader>
-                  <Calendar className="w-12 h-12 text-healing-pink-dark mx-auto mb-4" />
-                  <CardTitle className="font-heading text-2xl font-bold text-foreground">
-                    25+
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-warm-gray font-medium">Healing Hours</p>
-                </CardContent>
-              </Card>
-
-              <Card className="text-center shadow-card border-0 bg-white">
-                <CardHeader>
                   <Gift className="w-12 h-12 text-primary mx-auto mb-4" />
                   <CardTitle className="font-heading text-2xl font-bold text-foreground">
                     24/7
@@ -84,42 +77,41 @@ const Movement = () => {
                   <p className="text-warm-gray font-medium">Support Available</p>
                 </CardContent>
               </Card>
+
             </div>
 
             <div className="grid lg:grid-cols-2 gap-16 mb-16">
               <div>
                 <h3 className="font-heading text-3xl font-bold text-foreground mb-6">
-                  Healing Hour Events
+                  Healing Hour – The Courage to Begin Again
                 </h3>
                 <p className="text-warm-gray leading-relaxed mb-6">
-                  Our monthly Healing Hour gatherings provide a safe space for sharing, 
-                  reflection, and community support. These intimate sessions combine 
-                  guided meditation, gentle movement, and meaningful connections.
+                  Life doesn’t always go as planned, but every ending invites a fresh start. Healing is remembering who you are beyond the pain.
                 </p>
+                <p>Affirmations:</p><br></br>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-warm-gray">Guided meditation and mindfulness</span>
+                    <span className="text-warm-gray">I give myself permission to start again.</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                    <span className="text-warm-gray">Gentle yoga and movement</span>
+                    <span className="text-warm-gray">I am refined, not defined, by my past.</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-healing-pink-dark rounded-full"></div>
-                    <span className="text-warm-gray">Sharing circles and peer support</span>
+                    <span className="text-warm-gray">Each day is a gift I honor with courage.</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-primary rounded-full"></div>
-                    <span className="text-warm-gray">Natural wellness education</span>
+                    <span className="text-warm-gray">I release the weight and embrace the lessons.</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span className="text-warm-gray">I trust the process and walk with grace.</span>
                   </li>
                 </ul>
-                <Button 
-                  size="lg" 
-                  className="bg-primary hover:bg-primary-hover text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
-                >
-                  Join Next Healing Hour
-                </Button>
+               
               </div>
 
               <div className="bg-gradient-healing rounded-3xl p-8 text-white">
@@ -133,26 +125,27 @@ const Movement = () => {
                 
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between items-center bg-white/10 rounded-lg p-3">
-                    <span>Monthly care packages</span>
-                    <span className="font-bold">$25</span>
+                    <span>Healing Yoga Bags</span>
+                    
                   </div>
                   <div className="flex justify-between items-center bg-white/10 rounded-lg p-3">
-                    <span>Healing Hour sponsorship</span>
-                    <span className="font-bold">$50</span>
+                    <span>Comfort Fleece Blankets</span>
+                   
                   </div>
                   <div className="flex justify-between items-center bg-white/10 rounded-lg p-3">
-                    <span>Family support package</span>
-                    <span className="font-bold">$100</span>
+                    <span>Natural Wellness Oils</span>
+                   
                   </div>
                 </div>
 
-                <Button 
-                  variant="secondary" 
-                  size="lg"
-                  className="w-full bg-white text-primary hover:bg-white/90 font-bold py-4 text-lg rounded-xl"
-                >
-                  Donate Now
-                </Button>
+                 <Button
+                    variant="secondary"
+                    size="lg"
+                    className="w-full bg-white text-primary hover:bg-white/90 font-bold py-4 text-lg rounded-xl"
+                    
+                  >
+                    Donate Now
+                  </Button> 
               </div>
             </div>
           </div>

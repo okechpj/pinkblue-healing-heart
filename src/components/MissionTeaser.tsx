@@ -11,7 +11,7 @@ const MissionTeaser = () => {
           <div className="animate-soft-slide">
             <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
               Our{" "}
-              <span className="bg-gradient-healing bg-clip-text text-transparent">
+              <span className="bg-gradient-healing bg-clip-text rounded-2xl p-2">
                 Mission & Vision
               </span>
             </h2>
@@ -107,7 +107,7 @@ const MissionTeaser = () => {
                   <Link to="/movement">
                     <Button 
                       variant="secondary" 
-                      className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-3 rounded-lg"
+                      className="bg-white text-primary hover:text-black hover:bg-primary-hover font-semibold px-6 py-3 rounded-lg"
                     >
                       Get Involved Today
                     </Button>

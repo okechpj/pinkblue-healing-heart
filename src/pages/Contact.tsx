@@ -127,7 +127,7 @@ const Contact = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-warm-gray mb-2">General inquiries and support</p>
-                      <p className="font-semibold text-foreground">hello@pinkblue.com</p>
+                      <p className="font-semibold text-foreground">glennanynecqe@gmail.com</p>
                     </CardContent>
                   </Card>
 
@@ -144,7 +144,7 @@ const Contact = () => {
                     </CardHeader>
                     <CardContent>
                       <p className="text-warm-gray mb-2">Direct support line</p>
-                      <p className="font-semibold text-foreground">+1 (555) 123-HEAL</p>
+                      <p className="font-semibold text-foreground">+254 768 699 946</p>
                     </CardContent>
                   </Card>
 

@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AuthButton from "@/components/AuthButton";
+import logo from "@/assets/logo.jpg"
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,8 +27,12 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover-lift">
-            <div className="w-10 h-10 bg-gradient-healing rounded-full flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-lg">BP</span>
+            <div className="w-15 h-10  ">
+               <img 
+                src={logo} 
+                alt="BluePink Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="font-heading text-2xl font-bold text-foreground">BluePink</h1>

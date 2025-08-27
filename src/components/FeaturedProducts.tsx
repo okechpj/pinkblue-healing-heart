@@ -61,9 +61,7 @@ const FeaturedProducts = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="font-heading text-2xl font-bold text-primary mb-4">
-                  {product.price}
-                </p>
+               
                 <Button 
                   className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle"
                 >
