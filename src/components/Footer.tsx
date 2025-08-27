@@ -27,7 +27,7 @@ const Footer = () => {
                 <span className="text-white font-heading font-bold text-lg">PB</span>
               </div>
               <div>
-                <h3 className="font-heading text-xl font-bold text-foreground">PinkBlue</h3>
+                <h3 className="font-heading text-xl font-bold text-foreground">BluePink</h3>
                 <p className="text-xs text-warm-gray -mt-1">Healing with Love</p>
               </div>
             </Link>
@@ -114,7 +114,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-warm-gray text-sm mb-4 md:mb-0">
-            © 2024 PinkBlue Movement. All rights reserved. Made with{" "}
+            © 2024 BluePink Movement. All rights reserved. Made with{" "}
             <Heart className="w-4 h-4 inline text-primary" /> for healing.
           </p>
           <div className="flex space-x-6">

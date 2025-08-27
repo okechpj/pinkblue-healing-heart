@@ -11,13 +11,14 @@
     --foreground: 220 13% 18%;
     
     /* Healing pink tones */
-    --healing-pink: 350 100% 88%;        /* Soft baby pink */
-    --healing-pink-light: 350 100% 94%;  /* Lighter pink */
-    --healing-pink-dark: 350 65% 78%;    /* Deeper pink */
+    --healing-pink: 350 100% 80%;        /* Soft baby pink */
+    --healing-pink-light: 350 100% 90%;  /* Lighter pink */
+    --healing-pink-dark: 350 65% 70%;    /* Deeper pink */
+    
     
     /* Calming blue tones */
-    --healing-blue: 207 44% 80%;         /* Pastel blue */
-    --healing-blue-light: 207 44% 90%;   /* Lighter blue */
+    --healing-blue: 207 44% 78%;         /* Pastel blue */
+    --healing-blue-light: 207 44% 87%;   /* Lighter blue */
     --healing-blue-dark: 207 44% 65%;    /* Deeper blue */
     
     /* Gentle grays */

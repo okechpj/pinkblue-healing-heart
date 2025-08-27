@@ -27,10 +27,10 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 hover-lift">
             <div className="w-10 h-10 bg-gradient-healing rounded-full flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-lg">PB</span>
+              <span className="text-white font-heading font-bold text-lg">BP</span>
             </div>
             <div>
-              <h1 className="font-heading text-2xl font-bold text-foreground">PinkBlue</h1>
+              <h1 className="font-heading text-2xl font-bold text-foreground">BluePink</h1>
               <p className="text-xs text-warm-gray -mt-1">Healing with Love</p>
             </div>
           </Link>

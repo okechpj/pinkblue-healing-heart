@@ -95,7 +95,7 @@ const Shop = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-primary bg-healing-pink-light px-3 py-1 rounded-full">
+                      <span className="text-sm bg-healing-pink-light px-3 py-1 rounded-full">
                         {product.category}
                       </span>
                       <span className="font-heading text-2xl font-bold text-primary">

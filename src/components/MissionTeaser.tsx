@@ -17,7 +17,7 @@ const MissionTeaser = () => {
             </h2>
             
             <p className="text-lg text-foreground mb-8 leading-relaxed">
-              Born from the Pink Ribbon Drive, PinkBlue has evolved into a movement of hope, 
+              Born from the Pink Ribbon Drive, BluePink has evolved into a movement of hope, 
               healing, and community. We believe in the power of love to heal hearts, 
               comfort souls, and strengthen spirits during life's most challenging moments.
             </p>
