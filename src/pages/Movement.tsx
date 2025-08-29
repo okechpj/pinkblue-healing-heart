@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,9 @@ import { Heart, Users, Calendar, Gift } from "lucide-react";
 // import { useNavigate } from "react-router-dom";
 
 
-// const navigate = useNavigate();
-
 const Movement = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen">
       <Header />
@@ -142,10 +143,10 @@ const Movement = () => {
                     variant="secondary"
                     size="lg"
                     className="w-full bg-white text-primary hover:bg-white/90 font-bold py-4 text-lg rounded-xl"
-                    
+                    onClick={() => navigate('/shop')}
                   >
                     Donate Now
-                  </Button> 
+                  </Button>
               </div>
             </div>
           </div>

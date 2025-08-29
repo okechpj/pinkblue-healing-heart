@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ const Blog = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -103,14 +105,19 @@ const Blog = () => {
                       </div>
                     </div>
                     <CardTitle className="font-heading text-2xl font-bold text-foreground hover:text-primary cursor-pointer transition-colors">
-                      {post.title}
+                      <button onClick={() => navigate(`/blog/${post.id}`)} className="text-left w-full">
+                        {post.title}
+                      </button>
                     </CardTitle>
                     <CardDescription className="text-warm-gray text-base leading-relaxed">
                       {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <button className="text-primary font-semibold hover:text-primary-hover transition-colors">
+                    <button 
+                      className="text-primary font-semibold hover:text-primary-hover transition-colors"
+                      onClick={() => navigate(`/blog/${post.id}`)}
+                    >
                       Read More →
                     </button>
                   </CardContent>

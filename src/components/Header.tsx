@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import AuthButton from "@/components/AuthButton";
+import CartIcon from "@/components/CartIcon";
 import logo from "@/assets/logo.jpg"
 
 const Header = () => {
@@ -55,7 +56,10 @@ const Header = () => {
                 </Link>
               ))}
             </nav>
-            <AuthButton />
+            <div className="flex items-center space-x-2">
+              <CartIcon />
+              <AuthButton />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -85,7 +89,8 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="px-4 py-2">
+              <div className="flex items-center space-x-4 px-4 py-2">
+                <CartIcon />
                 <AuthButton />
               </div>
             </div>

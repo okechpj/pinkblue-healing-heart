@@ -5,11 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/CartContext";
 
 const Shop = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { addToCart } = useCart();
+  
+  const USD_TO_KSH = 150; // Exchange rate
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -35,6 +39,20 @@ const Shop = () => {
 
     fetchProducts();
   }, [toast]);
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image
+    });
+    
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
 
   return (
     <div className="min-h-screen">
@@ -81,8 +99,16 @@ const Shop = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <CardHeader>
-                    <div className="w-full h-48 bg-calm-gray rounded-lg mb-4 flex items-center justify-center">
-                      <span className="text-warm-gray">Product Image</span>
+                    <div className="w-full h-48 bg-calm-gray rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                      {product.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-warm-gray">Product Image</span>
+                      )}
                     </div>
                     <CardTitle className="font-heading text-xl font-semibold text-foreground">
                       {product.name}
@@ -97,10 +123,13 @@ const Shop = () => {
                         {product.category}
                       </span>
                       <span className="font-heading text-2xl font-bold text-primary">
-                        ${product.price}
+                        Ksh {Math.round(product.price * USD_TO_KSH).toLocaleString()}
                       </span>
                     </div>
-                    <Button className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle">
+                    <Button 
+                      className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle"
+                      onClick={() => handleAddToCart(product)}
+                    >
                       Add to Cart
                     </Button>
                   </CardContent>

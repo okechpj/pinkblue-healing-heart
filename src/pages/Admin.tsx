@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImageUpload } from "@/components/ImageUpload";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -258,7 +259,7 @@ const Admin = () => {
                       <div className="grid md:grid-cols-3 gap-4">
                         <div>
                           <label className="text-sm font-medium text-foreground mb-2 block">
-                            Price ($)
+                            Price (Ksh)
                           </label>
                           <Input
                             type="number"
@@ -280,11 +281,12 @@ const Admin = () => {
                         </div>
                         <div>
                           <label className="text-sm font-medium text-foreground mb-2 block">
-                            Image URL
+                            Product Image
                           </label>
-                          <Input
-                            value={productForm.image}
-                            onChange={(e) => setProductForm({...productForm, image: e.target.value})}
+                          <ImageUpload
+                            bucket="product-images"
+                            onUpload={(url) => setProductForm({...productForm, image: url})}
+                            currentImage={productForm.image}
                           />
                         </div>
                       </div>
@@ -355,11 +357,12 @@ const Admin = () => {
                         </div>
                         <div>
                           <label className="text-sm font-medium text-foreground mb-2 block">
-                            Image URL
+                            Blog Image
                           </label>
-                          <Input
-                            value={blogForm.image}
-                            onChange={(e) => setBlogForm({...blogForm, image: e.target.value})}
+                          <ImageUpload
+                            bucket="blog-images"
+                            onUpload={(url) => setBlogForm({...blogForm, image: url})}
+                            currentImage={blogForm.image}
                           />
                         </div>
                       </div>
