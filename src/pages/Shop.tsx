@@ -1,59 +1,40 @@
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Shop = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Premium Yoga Mat & Bag Set",
-      description: "Eco-friendly, non-slip yoga mat with matching healing-themed carry bag",
-      price: "$49.99",
-      category: "Yoga & Movement",
-      image: "/placeholder-yoga.jpg"
-    },
-    {
-      id: 2,
-      name: "Comfort Fleece Blanket",
-      description: "Ultra-soft fleece blanket for warmth during treatments and recovery",
-      price: "$34.99", 
-      category: "Comfort Items",
-      image: "/placeholder-blanket.jpg"
-    },
-    {
-      id: 3,
-      name: "Pure Neem Oil",
-      description: "100% natural neem oil for skincare and healing properties",
-      price: "$19.99",
-      category: "Natural Oils",
-      image: "/placeholder-oil.jpg"
-    },
-    {
-      id: 4,
-      name: "Healing Castor Oil",
-      description: "Cold-pressed castor oil for therapeutic and skincare use",
-      price: "$22.99",
-      category: "Natural Oils", 
-      image: "/placeholder-castor.jpg"
-    },
-    {
-      id: 5,
-      name: "Baobab Powder Supplement",
-      description: "Natural immune-boosting baobab powder rich in vitamin C",
-      price: "$28.99",
-      category: "Supplements",
-      image: "/placeholder-baobab.jpg"
-    },
-    {
-      id: 6,
-      name: "Moringa Capsules",
-      description: "Premium moringa leaf capsules for natural energy and wellness",
-      price: "$32.99",
-      category: "Supplements",
-      image: "/placeholder-moringa.jpg"
-    }
-  ];
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        toast({
+          title: "Error loading products",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [toast]);
 
   return (
     <div className="min-h-screen">
@@ -75,8 +56,25 @@ const Shop = () => {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product, index) => (
+            {loading ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[...Array(6)].map((_, index) => (
+                  <Card key={index} className="animate-pulse">
+                    <CardHeader>
+                      <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded"></div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            ) : products.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-warm-gray text-lg">No products available at the moment.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products.map((product, index) => (
                 <Card 
                   key={product.id}
                   className="shadow-card hover-lift animate-gentle-fade border-0 bg-white"
@@ -99,7 +97,7 @@ const Shop = () => {
                         {product.category}
                       </span>
                       <span className="font-heading text-2xl font-bold text-primary">
-                        {product.price}
+                        ${product.price}
                       </span>
                     </div>
                     <Button className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle">
@@ -107,8 +105,9 @@ const Shop = () => {
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>

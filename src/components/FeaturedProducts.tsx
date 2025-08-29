@@ -1,34 +1,40 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingBag, Heart, Leaf } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const FeaturedProducts = () => {
-  const products = [
-    {
-      id: 1,
-      name: "Healing Yoga Bags",
-      description: "Soft, eco-friendly yoga mats and bags for your healing journey",
-      price: "$49.99",
-      icon: <ShoppingBag className="w-8 h-8 text-primary" />,
-      color: "bg-healing-pink-light"
-    },
-    {
-      id: 2,
-      name: "Comfort Fleece Blankets", 
-      description: "Ultra-soft fleece blankets for warmth and comfort during recovery",
-      price: "$34.99",
-      icon: <Heart className="w-8 h-8 text-secondary" />,
-      color: "bg-healing-blue-light"
-    },
-    {
-      id: 3,
-      name: "Natural Wellness Oils",
-      description: "Pure Neem, Castor, and healing oils for natural skincare and wellness",
-      price: "$24.99",
-      icon: <Leaf className="w-8 h-8 text-healing-pink-dark" />,
-      color: "bg-calm-gray"
-    }
-  ];
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .limit(3)
+          .order('created_at', { ascending: false });
+        
+        if (data) {
+          setProducts(data.map((product, index) => ({
+            ...product,
+            icon: index === 0 ? <ShoppingBag className="w-8 h-8 text-primary" /> :
+                  index === 1 ? <Heart className="w-8 h-8 text-secondary" /> :
+                  <Leaf className="w-8 h-8 text-healing-pink-dark" />,
+            color: index === 0 ? "bg-healing-pink-light" :
+                   index === 1 ? "bg-healing-blue-light" :
+                   "bg-calm-gray"
+          })));
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <section className="py-20 px-4 bg-gradient-soft">
@@ -62,24 +68,28 @@ const FeaturedProducts = () => {
               </CardHeader>
               <CardContent className="text-center">
                
-                <Button 
-                  className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle"
-                >
-                  Shop Now
-                </Button>
+                <Link to="/shop">
+                  <Button 
+                    className="w-full bg-secondary hover:bg-secondary-hover text-secondary-foreground font-semibold rounded-lg shadow-gentle"
+                  >
+                    Shop Now
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}
         </div>
 
         <div className="text-center">
-          <Button 
-            variant="outline" 
-            size="lg"
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
-          >
-            View All Products
-          </Button>
+          <Link to="/shop">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-4 text-lg font-semibold rounded-xl shadow-gentle hover-lift"
+            >
+              View All Products
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

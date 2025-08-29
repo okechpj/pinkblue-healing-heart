@@ -1,35 +1,40 @@
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Blog = () => {
-  const posts = [
-    {
-      id: 1,
-      title: "The Healing Power of Community Support",
-      excerpt: "Discover how connecting with others on similar journeys can accelerate healing and provide comfort during challenging times.",
-      author: "Debra PinkBlue",
-      date: "November 15, 2024",
-      category: "Healing Reflections"
-    },
-    {
-      id: 2,
-      title: "Natural Wellness: Benefits of Baobab for Immunity",
-      excerpt: "Learn about the incredible immune-boosting properties of baobab fruit and how it can support your health naturally.",
-      author: "Irene Wellness",
-      date: "November 10, 2024", 
-      category: "Product Benefits"
-    },
-    {
-      id: 3,
-      title: "Creating Sacred Space: Healing Hour Reflections",
-      excerpt: "Insights from our latest Healing Hour gathering and the transformative power of shared meditation and mindfulness.",
-      author: "PinkBlue Team",
-      date: "November 5, 2024",
-      category: "Healing Events"
-    }
-  ];
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setPosts(data || []);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        toast({
+          title: "Error loading blog posts",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, [toast]);
 
   return (
     <div className="min-h-screen">
@@ -51,8 +56,25 @@ const Blog = () => {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-4xl">
-            <div className="space-y-8">
-              {posts.map((post, index) => (
+            {loading ? (
+              <div className="space-y-8">
+                {[...Array(3)].map((_, index) => (
+                  <Card key={index} className="animate-pulse">
+                    <CardHeader>
+                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-200 rounded"></div>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-warm-gray text-lg">No blog posts available yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                {posts.map((post, index) => (
                 <Card 
                   key={post.id}
                   className="shadow-card hover-lift animate-gentle-fade border-0 bg-white"
@@ -60,9 +82,11 @@ const Blog = () => {
                 >
                   <CardHeader>
                     <div className="flex flex-wrap items-center gap-4 mb-4">
-                      <span className="text-sm text-primary bg-healing-pink-light px-3 py-1 rounded-full">
-                        {post.category}
-                      </span>
+                      {post.tags && post.tags.length > 0 && (
+                        <span className="text-sm text-primary bg-healing-pink-light px-3 py-1 rounded-full">
+                          {post.tags[0]}
+                        </span>
+                      )}
                       <div className="flex items-center text-sm text-warm-gray gap-4">
                         <div className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
@@ -70,7 +94,11 @@ const Blog = () => {
                         </div>
                         <div className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
-                          <span>{post.date}</span>
+                          <span>{new Date(post.created_at).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}</span>
                         </div>
                       </div>
                     </div>
@@ -78,7 +106,7 @@ const Blog = () => {
                       {post.title}
                     </CardTitle>
                     <CardDescription className="text-warm-gray text-base leading-relaxed">
-                      {post.excerpt}
+                      {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -87,8 +115,9 @@ const Blog = () => {
                     </button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
             <div className="text-center mt-16">
               <div className="bg-gradient-healing rounded-2xl p-8 text-white">
