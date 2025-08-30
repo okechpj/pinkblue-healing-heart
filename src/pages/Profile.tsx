@@ -59,14 +59,14 @@ const Profile = () => {
         return;
       }
 
-      if (data) {
-        setProfile(data);
-        form.reset({
-          display_name: data.display_name || user.user_metadata?.display_name || "",
-          phone: data.phone || "",
-          address: data.address || "",
-        });
-      } else {
+        if (data) {
+          setProfile(data);
+          form.reset({
+            display_name: data.display_name || user.user_metadata?.display_name || "",
+            phone: data.phone || "",
+            address: data.address || "",
+          });
+        } else {
         // Set default display name from user metadata
         form.reset({
           display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || "",
