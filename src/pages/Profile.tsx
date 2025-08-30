@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { User, Save } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ type ProfileForm = {
   display_name: string;
   phone: string;
   address: string;
+  gender: string;
 };
 
 const Profile = () => {
@@ -25,11 +27,21 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
+  const getAvatarUrl = (gender: string) => {
+    if (gender === 'male') {
+      return 'https://api.dicebear.com/7.x/avataaars/svg?seed=male&backgroundColor=b6e3f4&clothesColor=262e33,3c4043,5199e4,25557c,1e2a4a,929598,2a2a2a,b5bdcc&topColor=a55728,b58143,bb9a20,4a312c,d6b370,724133,2c1b18&hairColor=724133,2c1b18,a55728,b58143,724133,d6b370&eyebrowColor=2c1b18&eyeColor=4a312c&skinColor=f0c2a6,dba589';
+    } else if (gender === 'female') {
+      return 'https://api.dicebear.com/7.x/avataaars/svg?seed=female&backgroundColor=fda4af&clothesColor=ff0000,dc2626,f97316,eab308,22c55e,06b6d4,3b82f6,8b5cf6&topColor=b58143,bb9a20,d6b370,ff0000,dc2626&hairColor=724133,2c1b18,a55728,b58143,724133,d6b370&eyebrowColor=2c1b18&eyeColor=4a312c&skinColor=f0c2a6,dba589';
+    }
+    return null;
+  };
+
   const form = useForm<ProfileForm>({
     defaultValues: {
       display_name: "",
       phone: "",
       address: "",
+      gender: "",
     },
   });
 
@@ -65,6 +77,7 @@ const Profile = () => {
             display_name: data.display_name || user.user_metadata?.display_name || "",
             phone: data.phone || "",
             address: data.address || "",
+            gender: data.gender || "",
           });
         } else {
         // Set default display name from user metadata
@@ -72,6 +85,7 @@ const Profile = () => {
           display_name: user.user_metadata?.display_name || user.email?.split('@')[0] || "",
           phone: "",
           address: "",
+          gender: "",
         });
       }
     } catch (error) {
@@ -90,6 +104,7 @@ const Profile = () => {
         display_name: data.display_name,
         phone: data.phone,
         address: data.address,
+        gender: data.gender,
       };
 
       const { error } = await supabase
@@ -135,8 +150,16 @@ const Profile = () => {
         <div className="max-w-2xl mx-auto">
           <Card className="shadow-card border-0 bg-white">
             <CardHeader className="text-center">
-              <div className="mx-auto w-16 h-16 bg-gradient-healing rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4">
-                <User className="w-8 h-8" />
+              <div className="mx-auto w-16 h-16 bg-gradient-healing rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4 overflow-hidden">
+                {profile?.gender && getAvatarUrl(profile.gender) ? (
+                  <img 
+                    src={getAvatarUrl(profile.gender)!} 
+                    alt="Profile avatar" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-8 h-8" />
+                )}
               </div>
               <CardTitle className="font-heading text-3xl font-bold text-foreground">
                 My Profile
@@ -209,6 +232,29 @@ const Profile = () => {
                             {...field} 
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-foreground">Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="border-border focus:ring-primary">
+                              <SelectValue placeholder="Select your gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

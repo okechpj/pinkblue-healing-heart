@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { CreditCard, Smartphone, Building2, ArrowLeft } from "lucide-react";
 
 const Checkout = () => {
@@ -42,8 +43,7 @@ const Checkout = () => {
     return null; // Will redirect
   }
 
-  const USD_TO_KSH = 150; // Current exchange rate (approximate)
-  const totalKsh = Math.round(getTotalAmount() * USD_TO_KSH);
+  const totalKsh = Math.round(getTotalAmount());
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +52,15 @@ const Checkout = () => {
       toast({
         title: "Payment Method Required",
         description: "Please select a payment method to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!customerDetails.name || !customerDetails.email) {
+      toast({
+        title: "Customer Information Required",
+        description: "Please fill in your name and email address.",
         variant: "destructive",
       });
       return;
@@ -66,14 +75,46 @@ const Checkout = () => {
       return;
     }
 
-    // Simulate order processing
-    toast({
-      title: "Order Placed Successfully!",
-      description: `Your order of Ksh ${totalKsh.toLocaleString()} has been received. You will be contacted shortly for payment.`,
-    });
+    try {
+      const orderData = {
+        user_id: user.id,
+        total_amount: getTotalAmount(),
+        status: 'pending',
+        customer_name: customerDetails.name,
+        customer_email: customerDetails.email,
+        customer_phone: customerDetails.phone,
+        customer_address: customerDetails.address,
+        payment_method: selectedPayment,
+        order_items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        }))
+      };
 
-    clearCart();
-    navigate('/shop');
+      const { error } = await supabase
+        .from('orders')
+        .insert(orderData);
+
+      if (error) throw error;
+
+      toast({
+        title: "Order Placed Successfully!",
+        description: "Thank you for your order. We'll process it shortly.",
+      });
+
+      clearCart();
+      navigate('/');
+    } catch (error) {
+      console.error('Error placing order:', error);
+      toast({
+        title: "Order Failed",
+        description: "There was an error placing your order. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const paymentMethods = [
@@ -269,7 +310,7 @@ const Checkout = () => {
                             </p>
                           </div>
                           <p className="font-medium">
-                            Ksh {Math.round(item.price * item.quantity * USD_TO_KSH).toLocaleString()}
+                            <span>Ksh {Math.round(item.price * item.quantity).toLocaleString()}</span>
                           </p>
                         </div>
                       ))}

@@ -104,6 +104,51 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          order_items: Json
+          payment_method: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          order_items: Json
+          payment_method?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          order_items?: Json
+          payment_method?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           category: string
@@ -147,6 +192,7 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          gender: string | null
           id: string
           phone: string | null
           updated_at: string
@@ -158,6 +204,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           phone?: string | null
           updated_at?: string
@@ -169,6 +216,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          gender?: string | null
           id?: string
           phone?: string | null
           updated_at?: string

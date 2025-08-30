@@ -6,14 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
+import { useUserRole } from "@/hooks/useUserRole";
+import { Edit, Trash2 } from "lucide-react";
 
 const Shop = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { addToCart } = useCart();
+  const { isAdmin } = useUserRole();
   
-  const USD_TO_KSH = 150; // Exchange rate
+  
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -52,6 +55,40 @@ const Shop = () => {
       title: "Added to Cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Product deleted",
+        description: "Product has been successfully deleted.",
+      });
+      
+      // Refresh products
+      const { data, error: fetchError } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!fetchError) {
+        setProducts(data || []);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete product.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -99,7 +136,7 @@ const Shop = () => {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <CardHeader>
-                    <div className="w-full h-48 bg-calm-gray rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                    <div className="w-full h-48 bg-calm-gray rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
                       {product.image ? (
                         <img 
                           src={product.image} 
@@ -108,6 +145,26 @@ const Shop = () => {
                         />
                       ) : (
                         <span className="text-warm-gray">Product Image</span>
+                      )}
+                      {isAdmin && (
+                        <div className="absolute top-2 right-2 flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
+                            onClick={() => window.open(`/admin?edit=product&id=${product.id}`, '_blank')}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="p-2 h-8 w-8 bg-red-500/90 hover:bg-red-600"
+                            onClick={() => handleDeleteProduct(product.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       )}
                     </div>
                     <CardTitle className="font-heading text-xl font-semibold text-foreground">
@@ -123,7 +180,7 @@ const Shop = () => {
                         {product.category}
                       </span>
                       <span className="font-heading text-2xl font-bold text-primary">
-                        Ksh {Math.round(product.price * USD_TO_KSH).toLocaleString()}
+                        Ksh {Math.round(product.price).toLocaleString()}
                       </span>
                     </div>
                     <Button 

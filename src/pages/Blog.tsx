@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, User, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Blog = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -37,6 +40,40 @@ const Blog = () => {
 
     fetchPosts();
   }, [toast]);
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm('Are you sure you want to delete this blog post?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Blog post deleted",
+        description: "Blog post has been successfully deleted.",
+      });
+      
+      // Refresh posts
+      const { data, error: fetchError } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!fetchError) {
+        setPosts(data || []);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete blog post.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -79,9 +116,29 @@ const Blog = () => {
                 {posts.map((post, index) => (
                 <Card 
                   key={post.id}
-                  className="shadow-card hover-lift animate-gentle-fade border-0 bg-white"
+                  className="shadow-card hover-lift animate-gentle-fade border-0 bg-white relative"
                   style={{ animationDelay: `${index * 0.2}s` }}
                 >
+                  {isAdmin && (
+                    <div className="absolute top-4 right-4 flex gap-2 z-10">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
+                        onClick={() => window.open(`/admin?edit=blog&id=${post.id}`, '_blank')}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="p-2 h-8 w-8 bg-red-500/90 hover:bg-red-600"
+                        onClick={() => handleDeletePost(post.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                   <CardHeader>
                     <div className="flex flex-wrap items-center gap-4 mb-4">
                       {post.tags && post.tags.length > 0 && (

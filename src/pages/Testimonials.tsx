@@ -2,14 +2,17 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Quote, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Quote, Star, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     const fetchTestimonials = async () => {
@@ -35,6 +38,40 @@ const Testimonials = () => {
 
     fetchTestimonials();
   }, [toast]);
+
+  const handleDeleteTestimonial = async (testimonialId: string) => {
+    if (!confirm('Are you sure you want to delete this testimonial?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .delete()
+        .eq('id', testimonialId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Testimonial deleted",
+        description: "Testimonial has been successfully deleted.",
+      });
+      
+      // Refresh testimonials
+      const { data, error: fetchError } = await supabase
+        .from('testimonials')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (!fetchError) {
+        setTestimonials(data || []);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete testimonial.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen">
@@ -87,9 +124,29 @@ const Testimonials = () => {
                 {testimonials.map((testimonial, index) => (
                 <Card 
                   key={testimonial.id}
-                  className="shadow-card hover-lift animate-gentle-fade border-0 bg-white h-full"
+                  className="shadow-card hover-lift animate-gentle-fade border-0 bg-white h-full relative"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
+                  {isAdmin && (
+                    <div className="absolute top-2 right-2 flex gap-2 z-10">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
+                        onClick={() => window.open(`/admin?edit=testimonial&id=${testimonial.id}`, '_blank')}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="p-2 h-8 w-8 bg-red-500/90 hover:bg-red-600"
+                        onClick={() => handleDeleteTestimonial(testimonial.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between mb-4">
                       <Quote className="w-8 h-8 text-primary opacity-30" />

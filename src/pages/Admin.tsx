@@ -12,7 +12,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Package, FileText, MessageSquare } from "lucide-react";
+import { Plus, Package, FileText, MessageSquare, ShoppingCart, Clock, CheckCircle, XCircle } from "lucide-react";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -45,6 +45,9 @@ const Admin = () => {
     rating: ''
   });
 
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
       navigate('/');
@@ -53,8 +56,84 @@ const Admin = () => {
         description: "You need admin privileges to access this page.",
         variant: "destructive",
       });
+    } else if (user && isAdmin) {
+      fetchOrders();
     }
   }, [user, isAdmin, loading, navigate, toast]);
+
+  const fetchOrders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          profiles!inner(display_name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast({
+        title: "Error loading orders",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order status updated successfully!",
+      });
+      
+      fetchOrders(); // Refresh orders
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update order status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'completed':
+        return 'text-green-600 bg-green-100';
+      case 'canceled':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Clock className="w-4 h-4" />;
+      case 'completed':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'canceled':
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,8 +275,12 @@ const Admin = () => {
 
         <section className="py-16 px-4">
           <div className="container mx-auto max-w-6xl">
-            <Tabs defaultValue="products" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+            <Tabs defaultValue="orders" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="orders" className="flex items-center space-x-2">
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>Orders</span>
+                </TabsTrigger>
                 <TabsTrigger value="products" className="flex items-center space-x-2">
                   <Package className="w-4 h-4" />
                   <span>Products</span>
@@ -211,6 +294,92 @@ const Admin = () => {
                   <span>Testimonials</span>
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="orders">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      <span>Orders Management</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {ordersLoading ? (
+                      <div className="text-center py-8">Loading orders...</div>
+                    ) : orders.length === 0 ? (
+                      <div className="text-center py-8 text-warm-gray">No orders found.</div>
+                    ) : (
+                      <div className="space-y-4">
+                        {orders.map((order) => (
+                          <div key={order.id} className="border border-border rounded-lg p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                              <div>
+                                <h3 className="font-semibold text-foreground">
+                                  Order #{order.id.slice(0, 8)}
+                                </h3>
+                                <p className="text-sm text-warm-gray">
+                                  Customer: {order.customer_name} ({order.profiles?.display_name})
+                                </p>
+                                <p className="text-sm text-warm-gray">
+                                  Date: {new Date(order.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-primary">
+                                  Ksh {Math.round(order.total_amount).toLocaleString()}
+                                </p>
+                                <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                                  {getStatusIcon(order.status)}
+                                  <span className="capitalize">{order.status}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="mb-4">
+                              <h4 className="text-sm font-medium text-foreground mb-2">Items:</h4>
+                              <div className="space-y-2">
+                                {order.order_items.map((item: any, index: number) => (
+                                  <div key={index} className="flex justify-between text-sm">
+                                    <span>{item.name} (x{item.quantity})</span>
+                                    <span>Ksh {Math.round(item.price * item.quantity).toLocaleString()}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant={order.status === 'pending' ? 'default' : 'outline'}
+                                onClick={() => updateOrderStatus(order.id, 'pending')}
+                                disabled={order.status === 'pending'}
+                              >
+                                Pending
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={order.status === 'completed' ? 'default' : 'outline'}
+                                onClick={() => updateOrderStatus(order.id, 'completed')}
+                                disabled={order.status === 'completed'}
+                              >
+                                Complete
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant={order.status === 'canceled' ? 'destructive' : 'outline'}
+                                onClick={() => updateOrderStatus(order.id, 'canceled')}
+                                disabled={order.status === 'canceled'}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               <TabsContent value="products">
                 <Card>
