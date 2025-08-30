@@ -2,7 +2,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
-import { User, LogOut, Shield } from "lucide-react";
+import { User, LogOut, Shield, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const AuthButton = () => {
   const { user, signOut, loading } = useAuth();
@@ -27,18 +34,34 @@ const AuthButton = () => {
             </Button>
           </Link>
         )}
-        <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
-          <User className="w-4 h-4 mr-2" />
-          {user.user_metadata?.display_name || user.email?.split('@')[0]}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={signOut}
-          className="text-foreground hover:text-primary"
-        >
-          <LogOut className="w-4 h-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-foreground hover:text-primary">
+              <User className="w-4 h-4 mr-2" />
+              {user.user_metadata?.display_name || user.email?.split('@')[0]}
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 bg-white border border-border shadow-card">
+            <DropdownMenuItem asChild>
+              <Link 
+                to="/profile" 
+                className="w-full flex items-center cursor-pointer text-foreground hover:text-primary"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              onClick={signOut}
+              className="cursor-pointer text-foreground hover:text-primary"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }

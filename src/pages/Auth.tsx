@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import logo from "@/assets/logo.jpg";
 
 type AuthForm = {
   email: string;
@@ -99,11 +100,15 @@ const Auth = () => {
           </Link>
           
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-12 h-12 bg-gradient-healing rounded-full flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-xl">PB</span>
+            <div className="w-15 h-10">
+              <img 
+                src={logo} 
+                alt="BluePink Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <h1 className="font-heading text-2xl font-bold text-foreground">PinkBlue</h1>
+              <h1 className="font-heading text-2xl font-bold text-foreground">BluePink</h1>
               <p className="text-xs text-warm-gray -mt-1">Healing with Love</p>
             </div>
           </div>
