@@ -7,18 +7,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { EditProductModal } from "@/components/EditProductModal";
 
 const Shop = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
   const { toast } = useToast();
   const { addToCart } = useCart();
   const { isAdmin } = useUserRole();
-  
-  
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -93,6 +90,16 @@ const Shop = () => {
     }
   };
 
+  const refreshProducts = async () => {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error) {
+      setProducts(data || []);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -150,14 +157,10 @@ const Shop = () => {
                       )}
                       {isAdmin && (
                         <div className="absolute top-2 right-2 flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
-                            onClick={() => setEditingProduct(product)}
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
+                          <EditProductModal 
+                            product={product} 
+                            onUpdate={refreshProducts} 
+                          />
                           <Button
                             size="sm"
                             variant="destructive"
@@ -200,23 +203,6 @@ const Shop = () => {
         </section>
       </main>
       <Footer />
-      
-      {editingProduct && (
-        <EditProductModal
-          product={editingProduct}
-          isOpen={!!editingProduct}
-          onClose={() => setEditingProduct(null)}
-          onUpdate={async () => {
-            const { data, error } = await supabase
-              .from('products')
-              .select('*')
-              .order('created_at', { ascending: false });
-            if (!error) {
-              setProducts(data || []);
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

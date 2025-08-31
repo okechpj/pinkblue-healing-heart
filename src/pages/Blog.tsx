@@ -4,16 +4,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Edit, Trash2 } from "lucide-react";
+import { Calendar, User, Trash2 } from "lucide-react";
+import { EditBlogModal } from "@/components/EditBlogModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
-import { EditBlogModal } from "@/components/EditBlogModal";
 
 const Blog = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingPost, setEditingPost] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAdmin } = useUserRole();
@@ -77,6 +76,16 @@ const Blog = () => {
     }
   };
 
+  const refreshPosts = async () => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error) {
+      setPosts(data || []);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -123,14 +132,10 @@ const Blog = () => {
                 >
                   {isAdmin && (
                     <div className="absolute top-4 right-4 flex gap-2 z-10">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
-                          onClick={() => setEditingPost(post)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
+                      <EditBlogModal 
+                        post={post} 
+                        onUpdate={refreshPosts} 
+                      />
                       <Button
                         size="sm"
                         variant="destructive"
@@ -210,23 +215,6 @@ const Blog = () => {
         </section>
       </main>
       <Footer />
-      
-      {editingPost && (
-        <EditBlogModal
-          post={editingPost}
-          isOpen={!!editingPost}
-          onClose={() => setEditingPost(null)}
-          onUpdate={async () => {
-            const { data, error } = await supabase
-              .from('blog_posts')
-              .select('*')
-              .order('created_at', { ascending: false });
-            if (!error) {
-              setPosts(data || []);
-            }
-          }}
-        />
-      )}
     </div>
   );
 };

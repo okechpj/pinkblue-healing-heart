@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -18,6 +18,7 @@ interface CartContextType {
   getTotalAmount: () => number;
   getTotalItems: () => number;
   clearCart: () => void;
+  loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -32,27 +33,27 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   // Load cart items from database when user logs in
   useEffect(() => {
     if (user) {
-      loadCartItems();
+      loadCartFromDatabase();
     } else {
       setItems([]);
     }
   }, [user]);
 
-  const loadCartItems = async () => {
+  const loadCartFromDatabase = async () => {
     if (!user) return;
     
+    setLoading(true);
     try {
       const { data: cartData, error } = await supabase
         .from('cart_items')
         .select(`
-          id,
           quantity,
-          product_id,
           products (
             id,
             name,
@@ -64,92 +65,72 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (error) throw error;
 
-      const cartItems: CartItem[] = cartData?.map(item => ({
-        id: (item.products as any).id,
-        name: (item.products as any).name,
-        price: (item.products as any).price,
+      const cartItems: CartItem[] = cartData?.map((item: any) => ({
+        id: item.products.id,
+        name: item.products.name,
+        price: item.products.price,
         quantity: item.quantity,
-        image: (item.products as any).image
+        image: item.products.image
       })) || [];
 
       setItems(cartItems);
     } catch (error) {
-      console.error('Error loading cart items:', error);
+      console.error('Error loading cart:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const syncCartToDatabase = async (cartItems: CartItem[]) => {
+    if (!user) return;
+
+    try {
+      // Clear existing cart items for this user
+      await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', user.id);
+
+      // Insert new cart items
+      if (cartItems.length > 0) {
+        const cartData = cartItems.map(item => ({
+          user_id: user.id,
+          product_id: item.id,
+          quantity: item.quantity
+        }));
+
+        await supabase
+          .from('cart_items')
+          .insert(cartData);
+      }
+    } catch (error) {
+      console.error('Error syncing cart to database:', error);
     }
   };
 
   const addToCart = async (product: { id: string; name: string; price: number; image?: string }) => {
-    if (!user) return;
-
-    try {
-      // Check if item already exists in cart
-      const { data: existingItem } = await supabase
-        .from('cart_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('product_id', product.id)
-        .single();
-
-      if (existingItem) {
-        // Update quantity
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity: existingItem.quantity + 1 })
-          .eq('id', existingItem.id);
-
-        if (error) throw error;
-      } else {
-        // Insert new item
-        const { error } = await supabase
-          .from('cart_items')
-          .insert({
-            user_id: user.id,
-            product_id: product.id,
-            quantity: 1
-          });
-
-        if (error) throw error;
-      }
-
-      // Reload cart items
-      await loadCartItems();
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      // Fallback to local state update
-      setItems(currentItems => {
-        const existingItem = currentItems.find(item => item.id === product.id);
-        
-        if (existingItem) {
-          return currentItems.map(item =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        }
-        
-        return [...currentItems, { ...product, quantity: 1 }];
-      });
+    const newItems = [...items];
+    const existingItem = newItems.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      newItems.push({ ...product, quantity: 1 });
+    }
+    
+    setItems(newItems);
+    
+    if (user) {
+      await syncCartToDatabase(newItems);
     }
   };
 
   const removeFromCart = async (id: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('cart_items')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('product_id', id);
-
-      if (error) throw error;
-
-      // Update local state
-      setItems(currentItems => currentItems.filter(item => item.id !== id));
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-      // Fallback to local state update
-      setItems(currentItems => currentItems.filter(item => item.id !== id));
+    const newItems = items.filter(item => item.id !== id);
+    setItems(newItems);
+    
+    if (user) {
+      await syncCartToDatabase(newItems);
     }
   };
 
@@ -158,32 +139,15 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await removeFromCart(id);
       return;
     }
-
-    if (!user) return;
     
-    try {
-      const { error } = await supabase
-        .from('cart_items')
-        .update({ quantity })
-        .eq('user_id', user.id)
-        .eq('product_id', id);
-
-      if (error) throw error;
-
-      // Update local state
-      setItems(currentItems =>
-        currentItems.map(item =>
-          item.id === id ? { ...item, quantity } : item
-        )
-      );
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      // Fallback to local state update
-      setItems(currentItems =>
-        currentItems.map(item =>
-          item.id === id ? { ...item, quantity } : item
-        )
-      );
+    const newItems = items.map(item =>
+      item.id === id ? { ...item, quantity } : item
+    );
+    
+    setItems(newItems);
+    
+    if (user) {
+      await syncCartToDatabase(newItems);
     }
   };
 
@@ -196,21 +160,17 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const clearCart = async () => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('cart_items')
-        .delete()
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      setItems([]);
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      // Fallback to local state update
-      setItems([]);
+    setItems([]);
+    
+    if (user) {
+      try {
+        await supabase
+          .from('cart_items')
+          .delete()
+          .eq('user_id', user.id);
+      } catch (error) {
+        console.error('Error clearing cart:', error);
+      }
     }
   };
 
@@ -222,6 +182,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     getTotalAmount,
     getTotalItems,
     clearCart,
+    loading,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
