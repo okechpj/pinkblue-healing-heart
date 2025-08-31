@@ -7,10 +7,12 @@ import { Quote, Star, Edit, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { EditTestimonialModal } from "@/components/EditTestimonialModal";
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingTestimonial, setEditingTestimonial] = useState<any>(null);
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
 
@@ -129,14 +131,14 @@ const Testimonials = () => {
                 >
                   {isAdmin && (
                     <div className="absolute top-2 right-2 flex gap-2 z-10">
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
-                        onClick={() => window.open(`/admin?edit=testimonial&id=${testimonial.id}`, '_blank')}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
+                          onClick={() => setEditingTestimonial(testimonial)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
                       <Button
                         size="sm"
                         variant="destructive"
@@ -187,6 +189,23 @@ const Testimonials = () => {
         </section>
       </main>
       <Footer />
+      
+      {editingTestimonial && (
+        <EditTestimonialModal
+          testimonial={editingTestimonial}
+          isOpen={!!editingTestimonial}
+          onClose={() => setEditingTestimonial(null)}
+          onUpdate={async () => {
+            const { data, error } = await supabase
+              .from('testimonials')
+              .select('*')
+              .order('date', { ascending: false });
+            if (!error) {
+              setTestimonials(data || []);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

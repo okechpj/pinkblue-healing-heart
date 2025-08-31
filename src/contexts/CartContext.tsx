@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface CartItem {
   id: string;
@@ -30,38 +32,159 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const { user } = useAuth();
 
-  const addToCart = (product: { id: string; name: string; price: number; image?: string }) => {
-    setItems(currentItems => {
-      const existingItem = currentItems.find(item => item.id === product.id);
-      
+  // Load cart items from database when user logs in
+  useEffect(() => {
+    if (user) {
+      loadCartItems();
+    } else {
+      setItems([]);
+    }
+  }, [user]);
+
+  const loadCartItems = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: cartData, error } = await supabase
+        .from('cart_items')
+        .select(`
+          id,
+          quantity,
+          product_id,
+          products (
+            id,
+            name,
+            price,
+            image
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const cartItems: CartItem[] = cartData?.map(item => ({
+        id: (item.products as any).id,
+        name: (item.products as any).name,
+        price: (item.products as any).price,
+        quantity: item.quantity,
+        image: (item.products as any).image
+      })) || [];
+
+      setItems(cartItems);
+    } catch (error) {
+      console.error('Error loading cart items:', error);
+    }
+  };
+
+  const addToCart = async (product: { id: string; name: string; price: number; image?: string }) => {
+    if (!user) return;
+
+    try {
+      // Check if item already exists in cart
+      const { data: existingItem } = await supabase
+        .from('cart_items')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+        .single();
+
       if (existingItem) {
-        return currentItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        // Update quantity
+        const { error } = await supabase
+          .from('cart_items')
+          .update({ quantity: existingItem.quantity + 1 })
+          .eq('id', existingItem.id);
+
+        if (error) throw error;
+      } else {
+        // Insert new item
+        const { error } = await supabase
+          .from('cart_items')
+          .insert({
+            user_id: user.id,
+            product_id: product.id,
+            quantity: 1
+          });
+
+        if (error) throw error;
       }
-      
-      return [...currentItems, { ...product, quantity: 1 }];
-    });
+
+      // Reload cart items
+      await loadCartItems();
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      // Fallback to local state update
+      setItems(currentItems => {
+        const existingItem = currentItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+          return currentItems.map(item =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+        
+        return [...currentItems, { ...product, quantity: 1 }];
+      });
+    }
   };
 
-  const removeFromCart = (id: string) => {
-    setItems(currentItems => currentItems.filter(item => item.id !== id));
+  const removeFromCart = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('product_id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setItems(currentItems => currentItems.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      // Fallback to local state update
+      setItems(currentItems => currentItems.filter(item => item.id !== id));
+    }
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = async (id: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      await removeFromCart(id);
       return;
     }
+
+    if (!user) return;
     
-    setItems(currentItems =>
-      currentItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity })
+        .eq('user_id', user.id)
+        .eq('product_id', id);
+
+      if (error) throw error;
+
+      // Update local state
+      setItems(currentItems =>
+        currentItems.map(item =>
+          item.id === id ? { ...item, quantity } : item
+        )
+      );
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      // Fallback to local state update
+      setItems(currentItems =>
+        currentItems.map(item =>
+          item.id === id ? { ...item, quantity } : item
+        )
+      );
+    }
   };
 
   const getTotalAmount = () => {
@@ -72,8 +195,23 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return items.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const clearCart = () => {
-    setItems([]);
+  const clearCart = async () => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setItems([]);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      // Fallback to local state update
+      setItems([]);
+    }
   };
 
   const value = {

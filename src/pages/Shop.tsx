@@ -8,10 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Edit, Trash2 } from "lucide-react";
+import { EditProductModal } from "@/components/EditProductModal";
 
 const Shop = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const { toast } = useToast();
   const { addToCart } = useCart();
   const { isAdmin } = useUserRole();
@@ -152,7 +154,7 @@ const Shop = () => {
                             size="sm"
                             variant="secondary"
                             className="p-2 h-8 w-8 bg-white/90 hover:bg-white"
-                            onClick={() => window.open(`/admin?edit=product&id=${product.id}`, '_blank')}
+                            onClick={() => setEditingProduct(product)}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -198,6 +200,23 @@ const Shop = () => {
         </section>
       </main>
       <Footer />
+      
+      {editingProduct && (
+        <EditProductModal
+          product={editingProduct}
+          isOpen={!!editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onUpdate={async () => {
+            const { data, error } = await supabase
+              .from('products')
+              .select('*')
+              .order('created_at', { ascending: false });
+            if (!error) {
+              setProducts(data || []);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
