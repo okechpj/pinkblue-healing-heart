@@ -91,7 +91,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .delete()
         .eq('user_id', user.id);
 
-      // Insert new cart items
+      // Insert new cart items using upsert to handle duplicates
       if (cartItems.length > 0) {
         const cartData = cartItems.map(item => ({
           user_id: user.id,
@@ -101,7 +101,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         await supabase
           .from('cart_items')
-          .insert(cartData);
+          .upsert(cartData, {
+            onConflict: 'user_id,product_id'
+          });
       }
     } catch (error) {
       console.error('Error syncing cart to database:', error);
