@@ -67,7 +67,7 @@ const Admin = () => {
         .from('orders')
         .select(`
           *,
-          profiles!inner(display_name)
+          profiles(display_name)
         `)
         .order('created_at', { ascending: false });
 
