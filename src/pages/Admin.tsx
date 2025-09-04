@@ -63,16 +63,28 @@ const Admin = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch orders
+      const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
-        .select(`
-          *,
-          profiles(display_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setOrders(data || []);
+      if (ordersError) throw ordersError;
+
+      // Fetch profiles for display names
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, display_name');
+
+      if (profilesError) throw profilesError;
+
+      // Join orders with profiles
+      const ordersWithProfiles = ordersData?.map(order => ({
+        ...order,
+        profiles: profilesData?.find(profile => profile.user_id === order.user_id) || null
+      }));
+
+      setOrders(ordersWithProfiles || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
       toast({
